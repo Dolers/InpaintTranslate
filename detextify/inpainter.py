@@ -107,8 +107,8 @@ class StableDiffusionInpainter(Inpainter):
       for x in range(0, image.height, SD_SIZE):
         for y in range(0, image.width, SD_SIZE):
           if self._tile_has_text_box(x, y, SD_SIZE, text_boxes):
-            crop_x1 = min(x + SD_SIZE, image.height)
-            crop_y1 = min(y + SD_SIZE, image.width)
+            crop_x1 = min(x + SD_SIZE, image.width)
+            crop_y1 = min(y + SD_SIZE, image.height)
             crop_box = (x, y, crop_x1, crop_y1)
 
             in_tile = self._pad_to_size(image.crop(crop_box), SD_SIZE)

@@ -11,6 +11,7 @@ from azure.cognitiveservices.vision.computervision import ComputerVisionClient
 from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes
 from msrest.authentication import CognitiveServicesCredentials
 
+from paddleocr import PaddleOCR
 
 @dataclass
 class TextBox:
@@ -96,3 +97,19 @@ class TesseractTextDetector(TextDetector):
              for l, top, w, h, text in zip(data["left"], data["top"], data["width"], data["height"], data["text"])
              if text.strip()]
     return boxes
+
+
+class PaddleTextDetector(TextDetector):
+
+  def __init__(self, pad_size: int = 10):
+     self.ocr = ocr = PaddleOCR(use_angle_cls=False, lang='en')
+     self.pad_size =  pad_size
+     
+  def detect_text(self, image_filename: str) -> Sequence[TextBox]:
+    result = self.ocr.ocr(image_filename, cls=False)
+    return [TextBox(line[0][0][0]-self.pad_size,
+                    line[0][0][1]-self.pad_size,
+                    line[0][2][0]-line[0][0][0]+self.pad_size*2,
+                    line[0][2][1]-line[0][0][1]+self.pad_size*2,
+                    line[1][0])
+             for line in result[0]]

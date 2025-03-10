@@ -19,6 +19,13 @@ class Detextifier:
             if not text_boxes:
                 break
 
+            from PIL import Image
+            im = Image.open("octopus.png")
+            draw = ImageDraw.Draw(im)
+            for box in text_boxes:
+              draw.rectangle([box.x, box.y, box.x+box.h, box.y+box.w], outline = 'white')
+            im.save("debug/octopus_textboxes.png")
+            
             print(f"\tCalling in-painting model...")
             self.inpainter.inpaint(to_inpaint_path, text_boxes, prompt, out_image_path)
             import os
