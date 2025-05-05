@@ -16,12 +16,23 @@ from paddleocr import PaddleOCR
 @dataclass
 class TextBox:
   # (x, y) is the top left corner of a rectangle; the origin of the coordinate system is the top-left of the image.
-  # x denotes the vertical axis, y denotes the horizontal axis (to match the traditional indexing in a matrix).
+  # x denotes the horizontal axis, y denotes the vertial axis
   x: int
   y: int
-  h: int
   w: int
+  h: int
   text: str = None
+  lines: int = 1
+  
+  @staticmethod
+  def from_grouped_boxes(group: Sequence['TextBox']) -> 'TextBox':
+    
+    return TextBox( x = min(group, key=lambda box: box.x).x,
+                    y = group[0].y,
+                    w = max(group, key=lambda box: box.w).w,
+                    h = group[-1].y + group[-1].h -group[0].y,
+                    text  = " ".join(box.text for box in group),
+                    lines = len(group))
 
 
 class TextDetector:
@@ -76,7 +87,7 @@ class AzureTextDetector(TextDetector):
           if h < 0 or w < 0:
             logging.error(f"Malformed bounding box from Azure: {line.bounding_box}")
 
-          text_boxes.append(TextBox(int(tl_x), int(tl_y), int(h), int(w), line.text))
+          text_boxes.append(TextBox(int(tl_x), int(tl_y), int(w), int(h), line.text))
     return text_boxes
 
 
@@ -102,7 +113,7 @@ class TesseractTextDetector(TextDetector):
 class PaddleTextDetector(TextDetector):
 
   def __init__(self, pad_size: int = 10):
-     self.ocr = ocr = PaddleOCR(use_angle_cls=False, lang='en')
+     self.ocr = PaddleOCR(use_angle_cls=False, lang='en')
      self.pad_size =  pad_size
      
   def detect_text(self, image_filename: str) -> Sequence[TextBox]:
@@ -112,4 +123,4 @@ class PaddleTextDetector(TextDetector):
                     line[0][2][0]-line[0][0][0]+self.pad_size*2,
                     line[0][2][1]-line[0][0][1]+self.pad_size*2,
                     line[1][0])
-             for line in result[0]]
+             for line in result[0] if '©' not in line[1][0]]

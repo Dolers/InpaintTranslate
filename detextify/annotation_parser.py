@@ -21,8 +21,8 @@ def convert_to_text_box(result: Dict) -> Optional[TextBox]:
 
         return TextBox(x=int(x * original_h / 100.0),
                        y=int(y * original_w / 100.0),
-                       h=int(h * original_h / 100.0),
-                       w=int(w * original_w / 100.0))
+                       w=int(w * original_w / 100.0),
+                       h=int(h * original_h / 100.0))
 
 
 def convert_to_text_boxes(annotation: Dict) -> Sequence[TextBox]:

@@ -13,3 +13,4 @@ pytesseract >= 0.3.10
 paddlepaddle-gpu
 paddlepaddle
 paddleocr
+deep-translator

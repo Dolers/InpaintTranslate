@@ -2,3 +2,4 @@
 poetry.lock
 detextify/__pycache__
 detextify/poetry.lock
+.venv/

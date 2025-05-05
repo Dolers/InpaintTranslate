@@ -17,8 +17,7 @@ from detextify.text_detector import TextBox
 
 class Inpainter:
   """Interface for in-painting models."""
-  # TODO(julia): Run some experiments to determine the best prompt.
-  DEFAULT_PROMPT = "plain background"
+  DEFAULT_PROMPT = "Seamlessly blend the masked area with realistic textures and colors, ensuring a natural and cohesive appearance. Maintain the surrounding environment."  
 
   def inpaint(self, in_image_path: str, text_boxes: Sequence[TextBox], prompt: str, out_image_path: str):
     pass
@@ -36,7 +35,7 @@ class DalleInpainter(Inpainter):
     mask = Image.new("RGBA", (width, height), (0, 0, 0, 1))  # fully opaque
     mask_draw = ImageDraw.Draw(mask)
     for text_box in text_boxes:
-      mask_draw.rectangle(xy=(text_box.x, text_box.y, text_box.x + text_box.h, text_box.y + text_box.w),
+      mask_draw.rectangle(xy=(text_box.x, text_box.y, text_box.x + text_box.w, text_box.y + text_box.h),
                           fill=(0, 0, 0, 0))  # fully transparent
     # Convert mask to bytes.
     bytes_arr = io.BytesIO()
@@ -77,19 +76,18 @@ class StableDiffusionInpainter(Inpainter):
 
   def _make_mask(self, text_boxes: Sequence[TextBox], height: int, width: int, mode: str) -> Image:
     """Returns a black image with white rectangles where the text boxes are."""
-    num_channels = len(mode)
-    background_color = tuple([0] * num_channels)
-    mask_color = tuple([255] * num_channels)
+    background_color = 'black'
+    mask_color = 'white'
 
     mask = Image.new(mode, (width, height), background_color)
     mask_draw = ImageDraw.Draw(mask)
     for text_box in text_boxes:
-      mask_draw.rectangle(xy=(text_box.x, text_box.y, text_box.x + text_box.h, text_box.y + text_box.w),
+      mask_draw.rectangle(xy=(text_box.x, text_box.y, text_box.x + text_box.w, text_box.y + text_box.h),
                           fill=mask_color)
     return mask
 
   def inpaint(self, in_image_path: str, text_boxes: Sequence[TextBox], prompt: str, out_image_path: str):
-    image = Image.open(in_image_path)
+    image = Image.open(in_image_path).convert("RGB") # SD cant handle alpha channel
     mask_image = self._make_mask(text_boxes, image.height, image.width, image.mode)
 
     # SD only accepts images that are exactly 512 x 512.
@@ -162,5 +160,5 @@ class LocalSDInpainter(StableDiffusionInpainter):
       self.pipe = pipe
 
   def call_model(self, prompt: str, image: Image, mask: Image) -> Image:
-    return self.pipe(prompt=prompt, image=image, mask_image=mask).images[0]
+    return self.pipe(prompt=prompt, image=image, mask_image=mask, negative_prompt="text, watermark, signature, letters, words, caption, subtitles, writing, printed text, handwriting, font, characters").images[0]
 
