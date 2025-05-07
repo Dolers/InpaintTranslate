@@ -1,4 +1,4 @@
-from detextify.logger_config import get_logger
+from inpaint_translate.logger_config import get_logger
 import logging
 import os
 import argparse
@@ -18,39 +18,39 @@ args = parser.parse_args()
 logger = get_logger()
 logger.setLevel(logging.DEBUG if args.verbose else logging.INFO)
 
-from detextify.detextifier import Detextifier
+from inpaint_translate.inpaint_translate import InpaintTranslator
 
 match args.detector:
   case "Tesseract":
-    from detextify.text_detector import TesseractTextDetector
+    from inpaint_translate.text_detector import TesseractTextDetector
     text_detector = TesseractTextDetector("/usr/bin/tesseract")
   case "Azure":
-    from detextify.text_detector import AzureTextDetector
+    from inpaint_translate.text_detector import AzureTextDetector
     text_detector = AzureTextDetector(os.environ["AZURE_ENDPOINT"], os.environ["AZURE_API_KEY"])
   case "PaddleOCR":
-    from detextify.text_detector import PaddleTextDetector
+    from inpaint_translate.text_detector import PaddleTextDetector
     text_detector = PaddleTextDetector()
   case _:
     raise ValueError(f"Unknown text detector: {args.detector}")
   
 match args.inpainter:
   case "Local Stable Diffusion":
-    from detextify.inpainter import LocalSDInpainter
+    from inpaint_translate.inpainter import LocalSDInpainter
     inpainter = LocalSDInpainter()
   case "Stable Diffusion via Replicate":
-    from detextify.inpainter import ReplicateSDInpainter
+    from inpaint_translate.inpainter import ReplicateSDInpainter
     inpainter = ReplicateSDInpainter(os.environ["REPLICATE_API_KEY"])
   case "Dall-e via OpenAI":
-    from detextify.inpainter import DalleInpainter
+    from inpaint_translate.inpainter import DalleInpainter
     inpainter = DalleInpainter(os.environ["OPENAI_API_KEY"])
   case _:
     raise ValueError(f"Unknown inpainter: {args.inpainter}")
 
-detextifier = Detextifier(text_detector, inpainter, MyMemoryTranslator(source="en-US", target=args.language))
+inpaint_translator = InpaintTranslator(text_detector, inpainter, MyMemoryTranslator(source="en-US", target=args.language))
 
 ## Create the output directory if it doesn't exist
 if args.verbose:
   debug_folder = Path("debug")
   debug_folder.mkdir(exist_ok=True)
 
-detextifier.detextify(Path(args.input), Path(args.output))
+inpaint_translator.inpaint_translate(Path(args.input), Path(args.output))

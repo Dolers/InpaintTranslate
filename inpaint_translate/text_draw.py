@@ -3,7 +3,7 @@ from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 
-from detextify.text_detector import TextBox 
+from inpaint_translate.text_detector import TextBox 
 
 def _get_wrapped_text(text: str, font: ImageFont.ImageFont, line_length: int):
   lines = ['']

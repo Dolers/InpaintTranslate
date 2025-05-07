@@ -1,7 +1,7 @@
 import unittest
 
-from detextify.text_detector import TextBox
-import detextify.utils as utils
+from inpaint_translate.text_detector import TextBox
+import inpaint_translate.utils as utils
 
 
 class UtilsTestCase(unittest.TestCase):

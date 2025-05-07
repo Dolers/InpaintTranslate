@@ -1,5 +1,4 @@
 .idea
-poetry.lock
-detextify/__pycache__
-detextify/poetry.lock
+inpaint_translate/__pycache__
+inpaint_translate/poetry.lock
 .venv/

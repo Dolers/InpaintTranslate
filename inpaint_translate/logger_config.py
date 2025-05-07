@@ -1,6 +1,6 @@
 import logging
 
-def get_logger(name='detextify'):
+def get_logger(name='inpaint_translate'):
     logger = logging.getLogger(name)
     if not logger.handlers:
         handler = logging.StreamHandler()

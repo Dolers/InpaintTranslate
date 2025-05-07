@@ -1,19 +1,19 @@
-from detextify.logger_config import get_logger
+from inpaint_translate.logger_config import get_logger
 import os
 from pathlib import Path
-from detextify.inpainter import Inpainter
-from detextify.text_detector import TextDetector, TextBox
+from inpaint_translate.inpainter import Inpainter
+from inpaint_translate.text_detector import TextDetector, TextBox
 from PIL import ImageDraw, Image
 from deep_translator.base import BaseTranslator
 
-from detextify.text_draw import draw_text_boxes_on_image
+from inpaint_translate.text_draw import draw_text_boxes_on_image
 import json
 from shutil import copyfile
 
 logger = get_logger()
 
 
-class Detextifier:
+class InpaintTranslator:
     def __init__(
         self,
         text_detector: TextDetector,
@@ -24,7 +24,7 @@ class Detextifier:
         self.inpainter = inpainter
         self.translator = translator
 
-    def detextify(
+    def inpaint_translate(
         self,
         in_image: Path,
         out_image: Path,
@@ -46,12 +46,12 @@ class Detextifier:
         for i in range(max_retries + 1):
             logger.info(f"Iteration {i} of {max_retries} for image {in_image}:")
 
-            self.detextify(to_inpaint_path, out_image, prompt)
+            self.inpaint_translate(to_inpaint_path, out_image, prompt)
 
             assert os.path.exists(out_image)
             to_inpaint_path = out_image
 
-    def detextify(
+    def inpaint_translate(
         self, in_image: Path, out_image: Path, prompt=Inpainter.DEFAULT_PROMPT
     ):
         """

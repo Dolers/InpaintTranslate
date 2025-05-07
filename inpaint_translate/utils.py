@@ -1,6 +1,6 @@
 """Utility methods."""
 from PIL import Image, ImageDraw
-from detextify.text_detector import TextBox
+from inpaint_translate.text_detector import TextBox
 from typing import List, Sequence
 
 import itertools

@@ -11,8 +11,8 @@ from PIL import Image, ImageDraw
 from diffusers import StableDiffusionInpaintPipeline
 from typing import Sequence
 
-import detextify.utils as utils
-from detextify.text_detector import TextBox
+import inpaint_translate.utils as utils
+from inpaint_translate.text_detector import TextBox
 
 
 class Inpainter:

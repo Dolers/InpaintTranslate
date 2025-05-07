@@ -15,7 +15,8 @@
             "python": "${command:python.interpreterPath}",
             "justMyCode": false,
             "args": [
-                "-v", "example/octopus.png",
+                "-v",
+                "example/centipede.png",
                 "-o", "example/out.png",]
         }
     ]
